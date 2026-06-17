@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: ./backend
+    container_name: pkimonitor-backend
+    env_file: .env
+    environment:
+      # Persist SQLite inside the named volume.
+      DATABASE_URL: sqlite:///./data/pkimonitor.db
+    volumes:
+      - pkimonitor-data:/app/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/health').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: pkimonitor-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+volumes:
+  pkimonitor-data:
