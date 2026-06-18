@@ -349,7 +349,8 @@ Oder bequem über den `Makefile`: `make backend-install`, `make seed`,
 | DELETE  | `/api/certificates/{id}`      | Löschen                                       |   ✓   |
 | GET     | `/api/monitors`               | Monitor-Liste                                 |   –   |
 | GET     | `/api/monitors/{id}`          | Monitor inkl. Check-Historie                  |   –   |
-| POST    | `/api/monitors`               | Monitor anlegen                               |   ✓   |
+| POST    | `/api/monitors`               | Monitor anlegen (prüft Zertifikat sofort, `?check=false` deaktiviert) | ✓ |
+| POST    | `/api/monitors/import`        | Bulk-Import vieler URLs (idempotent) → siehe [docs/url-import.md](docs/url-import.md) | ✓ |
 | PUT     | `/api/monitors/{id}`          | Monitor aktualisieren                         |   ✓   |
 | DELETE  | `/api/monitors/{id}`          | Monitor löschen                               |   ✓   |
 | POST    | `/api/monitors/{id}/check`    | Sofortprüfung auslösen                        |   ✓   |
@@ -366,10 +367,14 @@ curl -X POST localhost:8000/api/certificates -H 'Content-Type: application/json'
   "name":"Intranet","common_name":"intranet.corp.local",
   "expiration_date":"2026-06-29T23:59:59Z","environment":"prod"}'
 
-# URL überwachen und sofort prüfen
+# URL überwachen – das Zertifikat wird sofort geprüft und sein Ablaufdatum
+# landet direkt im Kalender (Sofort-Check ist Default, ?check=false deaktiviert ihn)
 curl -X POST localhost:8000/api/monitors -H 'Content-Type: application/json' \
-     -d '{"url":"https://example.com"}'
-curl -X POST localhost:8000/api/monitors/1/check
+     -d '{"url":"https://example.com","environment":"prod"}'
+
+# Viele URLs auf einmal importieren (idempotent) – Details: docs/url-import.md
+curl -X POST localhost:8000/api/monitors/import -H 'Content-Type: application/json' \
+     -d '{"urls":["https://example.com","nas.intern:5001"],"check":true,"default_environment":"prod"}'
 
 # PEM importieren
 curl -X POST localhost:8000/api/import/pem -F 'file=@cert.pem' -F 'environment=prod'
