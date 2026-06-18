@@ -70,7 +70,8 @@ class MonitorBase(BaseModel):
 
 
 class MonitorCreate(MonitorBase):
-    pass
+    # Optional environment applied to the auto-discovered certificate.
+    environment: str | None = None
 
 
 class MonitorUpdate(BaseModel):
@@ -107,6 +108,46 @@ class MonitorRead(MonitorBase):
 
 class MonitorDetail(MonitorRead):
     results: list[CheckResultRead] = []
+
+
+# --------------------------------------------------------------------------
+# Bulk import of URL monitors
+# --------------------------------------------------------------------------
+class MonitorImportItem(BaseModel):
+    url: str
+    name: str | None = None
+    port: int = 443
+    environment: str | None = None
+
+
+class MonitorImportRequest(BaseModel):
+    # Either pass detailed items via `monitors`, or a plain list of URLs.
+    monitors: list[MonitorImportItem] = []
+    urls: list[str] = []
+    # Run a TLS check immediately so the expiry date is available at once.
+    check: bool = True
+    # Default environment for discovered certificates (per-item value wins).
+    default_environment: str | None = None
+
+
+class MonitorImportResultItem(BaseModel):
+    url: str
+    monitor_id: int | None = None
+    created: bool = False        # False if an existing monitor was reused
+    checked: bool = False
+    success: bool | None = None  # result of the immediate TLS check
+    common_name: str | None = None
+    expiration_date: datetime | None = None
+    days_remaining: int | None = None
+    error: str | None = None
+
+
+class MonitorImportResponse(BaseModel):
+    total: int
+    created: int
+    reused: int
+    check_failed: int
+    items: list[MonitorImportResultItem]
 
 
 # --------------------------------------------------------------------------

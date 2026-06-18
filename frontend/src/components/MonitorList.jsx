@@ -6,6 +6,7 @@ export default function MonitorList() {
   const [monitors, setMonitors] = useState([])
   const [url, setUrl] = useState('')
   const [busy, setBusy] = useState(null)
+  const [adding, setAdding] = useState(false)
   const [error, setError] = useState(null)
 
   async function load() {
@@ -20,11 +21,15 @@ export default function MonitorList() {
   async function add(e) {
     e.preventDefault()
     if (!url) return
+    setAdding(true)
+    setError(null)
     try {
+      // Backend checks the certificate immediately, so the expiry date is
+      // discovered right away and appears in the calendar.
       await api.createMonitor({ url })
       setUrl('')
       load()
-    } catch (e) { setError(e.message) }
+    } catch (e) { setError(e.message) } finally { setAdding(false) }
   }
 
   async function checkNow(id) {
@@ -49,8 +54,9 @@ export default function MonitorList() {
           onChange={(e) => setUrl(e.target.value)}
           className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm"
         />
-        <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-          URL überwachen
+        <button disabled={adding}
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">
+          {adding ? 'Prüfe Zertifikat…' : 'URL überwachen'}
         </button>
       </form>
 
