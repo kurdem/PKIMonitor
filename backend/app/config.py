@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -61,6 +62,15 @@ class Settings(BaseSettings):
     webhook_enabled: bool = False
     webhook_url: str | None = None
     webhook_type: str = "slack"  # slack | teams | generic
+
+    # An empty env value (e.g. `API_KEY=` in .env) arrives as "" not None.
+    # Normalize blanks to None so that "leave empty to disable auth" holds.
+    @field_validator("api_key", "smtp_user", "smtp_password", "webhook_url", mode="before")
+    @classmethod
+    def _blank_to_none(cls, value):
+        if isinstance(value, str) and value.strip() == "":
+            return None
+        return value
 
     # ---- Parsed list helpers ---------------------------------------------
     @staticmethod
