@@ -12,7 +12,7 @@ from . import models  # noqa: F401  (ensure models are registered on Base)
 from .config import settings
 from .database import Base, engine
 from .logging_config import setup_logging
-from .routers import certificates, dashboard, imports, monitors
+from .routers import certificates, dashboard, imports, monitors, notifications
 from .scheduler import shutdown_scheduler, start_scheduler
 
 setup_logging(settings.log_level)
@@ -49,6 +49,7 @@ app.include_router(certificates.router)
 app.include_router(monitors.router)
 app.include_router(dashboard.router)
 app.include_router(imports.router)
+app.include_router(notifications.router)
 
 
 @app.get("/api/health", tags=["meta"])
