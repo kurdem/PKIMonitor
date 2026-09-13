@@ -290,7 +290,7 @@ cp .env.example .env        # bei Bedarf SMTP/Webhook/API_KEY konfigurieren
 docker compose up -d --build
 ```
 
-- Frontend (nginx):  http://localhost:8080
+- Frontend (nginx):  http://localhost:8080  (Port via `FRONTEND_PORT` änderbar, z. B. `FRONTEND_PORT=3000 docker compose up -d`)
 - Backend (API):     http://localhost:8000  ·  Swagger-UI: http://localhost:8000/docs
 - SQLite liegt im benannten Volume `pkimonitor-data` (`/app/data/pkimonitor.db`).
 
@@ -389,6 +389,7 @@ Wichtigste Werte:
 
 | Variable                 | Default                          | Bedeutung                              |
 |--------------------------|----------------------------------|----------------------------------------|
+| `FRONTEND_PORT`          | `8080`                           | Host-Port der Web-UI (Docker) bzw. Vite Dev/Preview |
 | `DATABASE_URL`           | `sqlite:///./data/pkimonitor.db` | DB-Verbindung                          |
 | `API_KEY`                | (leer)                           | aktiviert Schreibschutz via Header     |
 | `MONITOR_INTERVAL_HOURS` | `6`                              | Prüf-Intervall der URL-Monitore        |
