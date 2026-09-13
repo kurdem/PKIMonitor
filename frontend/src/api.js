@@ -1,6 +1,12 @@
 // Thin fetch wrapper around the PKIMonitor REST API.
-const API_BASE = import.meta.env.VITE_API_BASE || ''
-const API_KEY = import.meta.env.VITE_API_KEY || ''
+//
+// Runtime config (window.__PKIMONITOR_CONFIG__, injected by /config.js) takes
+// precedence over the build-time VITE_* vars, so the API base can be set per
+// deployment without rebuilding. Empty = same-origin relative /api.
+const runtimeConfig =
+  (typeof window !== 'undefined' && window.__PKIMONITOR_CONFIG__) || {}
+const API_BASE = runtimeConfig.apiBase || import.meta.env.VITE_API_BASE || ''
+const API_KEY = runtimeConfig.apiKey || import.meta.env.VITE_API_KEY || ''
 
 async function request(path, options = {}) {
   const headers = { ...(options.headers || {}) }
