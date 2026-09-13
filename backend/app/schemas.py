@@ -151,6 +151,16 @@ class MonitorImportResponse(BaseModel):
 
 
 # --------------------------------------------------------------------------
+# Notifications
+# --------------------------------------------------------------------------
+class NotificationTestResult(BaseModel):
+    channel: str
+    enabled: bool
+    success: bool
+    detail: str
+
+
+# --------------------------------------------------------------------------
 # Dashboard
 # --------------------------------------------------------------------------
 class DashboardStats(BaseModel):

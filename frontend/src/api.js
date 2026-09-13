@@ -43,6 +43,10 @@ export const api = {
   // Dashboard
   dashboard: () => request('/api/dashboard'),
 
+  // Notifications
+  testNotifications: (channel) =>
+    request(`/api/notifications/test${channel ? `?channel=${channel}` : ''}`, { method: 'POST' }),
+
   // Import
   importPem: (formData) => request('/api/import/pem', { method: 'POST', body: formData }),
 }

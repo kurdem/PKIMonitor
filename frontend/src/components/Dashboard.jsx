@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api'
+import NotificationTest from './NotificationTest'
 import StatCard from './StatCard'
 
 export default function Dashboard() {
@@ -27,6 +28,7 @@ export default function Dashboard() {
         <StatCard label="Fehlerhafte Checks" value={stats.monitors_failing} accent="red" />
         <StatCard label="Ohne Ablaufdatum" value={stats.unknown} accent="slate" />
       </div>
+      <NotificationTest />
     </div>
   )
 }
